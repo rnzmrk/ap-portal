@@ -100,6 +100,7 @@ class PoGppoService
 
 public function store(StorePoGppoRequest $request): PoGppo
 {
+    dd($request->all(), $request->file('files'));
     $files = [];
 
     if ($request->hasFile('files')) {
