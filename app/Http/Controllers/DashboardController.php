@@ -19,41 +19,117 @@ class DashboardController extends Controller
         };
     }
 
-    public function supplierDashboard()
-    {
-        $user = auth()->user();
+public function supplierDashboard()
+{
+    $userId = auth()->id();
 
-        $totalJo = JoEvaluation::where('user_id', $user->id)->count();
-        $totalPo = PoGppo::where('user_id', $user->id)->count();
+    // =========================
+    // BASIC TOTALS
+    // =========================
+    $allJo = JoEvaluation::where('user_id', $userId)->count();
+    $allPo = PoGppo::where('user_id', $userId)->count();
 
-        $totalJoAmount = JoEvaluation::where('user_id', $user->id)->sum('amount');
-        $totalPoAmount = PoGppo::where('user_id', $user->id)->sum('amount');
+    $totalJoAmount = JoEvaluation::where('user_id', $userId)->sum('amount');
+    $totalPoAmount = PoGppo::where('user_id', $userId)->sum('amount');
 
-        return view('supplier.dashboard', compact(
-            'totalJo',
-            'totalPo',
-            'totalJoAmount',
-            'totalPoAmount'
-        ));
-    }
+    // =========================
+    // JO STATUS GROUPED
+    // =========================
+    $joStatuses = JoEvaluation::where('user_id', $userId)
+        ->selectRaw('status, COUNT(*) as total')
+        ->groupBy('status')
+        ->pluck('total', 'status');
+
+    $approvedJo = ($joStatuses['operation_approved'] ?? 0)
+                + ($joStatuses['evaluation_approved'] ?? 0);
+
+    $rejectedJo = ($joStatuses['operation_rejected'] ?? 0)
+                + ($joStatuses['procurement_rejected'] ?? 0);
+
+    $releasedJo = $joStatuses['payment_for_release'] ?? 0;
+    $pendingJo  = $joStatuses['pending'] ?? 0;
+
+    // =========================
+    // PO STATUS GROUPED
+    // =========================
+    $poStatuses = PoGppo::where('user_id', $userId)
+        ->selectRaw('status, COUNT(*) as total')
+        ->groupBy('status')
+        ->pluck('total', 'status');
+
+    $approvedPo  = $poStatuses['approved'] ?? 0;
+    $continuedPo = $poStatuses['continued'] ?? 0;
+    $releasedPo  = $poStatuses['released'] ?? 0;
+    $returnedPo  = $poStatuses['returned_for_compliance'] ?? 0;
+    $pendingPo   = $poStatuses['pending'] ?? 0;
+
+    // =========================
+    // AMOUNT BY STATUS
+    // =========================
+    $pendingJoAmount = JoEvaluation::where('user_id', $userId)
+        ->where('status', 'pending')
+        ->sum('amount');
+
+    $releasedJoAmount = JoEvaluation::where('user_id', $userId)
+        ->where('status', 'payment_for_release')
+        ->sum('amount');
+
+    $pendingPoAmount = PoGppo::where('user_id', $userId)
+        ->where('status', 'pending')
+        ->sum('amount');
+
+    $releasedPoAmount = PoGppo::where('user_id', $userId)
+        ->where('status', 'released')
+        ->sum('amount');
+
+    // =========================
+    // MONTHLY JO AMOUNT
+    // =========================
+    $joMonthly = JoEvaluation::where('user_id', $userId)
+        ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('total', 'month');
+
+    // =========================
+    // MONTHLY PO AMOUNT
+    // =========================
+    $poMonthly = PoGppo::where('user_id', $userId)
+        ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('total', 'month');
+
+    return view('supplier.dashboard', compact(
+        'allJo',
+        'allPo',
+        'totalJoAmount',
+        'totalPoAmount',
+
+        'approvedJo',
+        'rejectedJo',
+        'releasedJo',
+        'pendingJo',
+
+        'approvedPo',
+        'continuedPo',
+        'releasedPo',
+        'returnedPo',
+        'pendingPo',
+
+        'pendingJoAmount',
+        'releasedJoAmount',
+
+        'pendingPoAmount',
+        'releasedPoAmount',
+
+        'joMonthly',
+        'poMonthly'
+    ));
+}
 
     public function procurementDashboard()
-    {
-        $pendingJo = JoEvaluation::where('status', 'for_procurement_review')->count();
-
-        $approvedJo = JoEvaluation::where('status', 'evaluation_approved')->count();
-
-        $rejectedJo = JoEvaluation::where('status', 'procurement_rejected')->count();
-
-        return view('procurement.dashboard', compact(
-            'pendingJo',
-            'approvedJo',
-            'rejectedJo'
-        ));
-    }
-public function financeDashboard()
-{
-    // =========================
+       {  // =========================
     // BASIC TOTALS
     // =========================
     $allJo = JoEvaluation::count();
@@ -92,7 +168,7 @@ public function financeDashboard()
     $pendingPo   = $poStatuses['pending'] ?? 0;
 
     // =========================
-    // 🔥 AMOUNT BY STATUS (FIX MISSING VARIABLES)
+    // 
     // =========================
     $pendingJoAmount = JoEvaluation::where('status', 'pending')->sum('amount');
     $releasedJoAmount = JoEvaluation::where('status', 'payment_for_release')->sum('amount');
@@ -119,7 +195,7 @@ public function financeDashboard()
     // =========================
     // RETURN VIEW
     // =========================
-    return view('finance.dashboard', compact(
+    return view('procurement.dashboard', compact(
         'allJo',
         'allPo',
         'totalJoAmount',
@@ -140,30 +216,187 @@ public function financeDashboard()
         'pendingPoAmount',
         'releasedPoAmount',
     ));
-}
+    }
+  
+    public function financeDashboard()
+    {
+        // =========================
+        // BASIC TOTALS
+        // =========================
+        $allJo = JoEvaluation::count();
+        $allPo = PoGppo::count();
+
+        $totalJoAmount = JoEvaluation::sum('amount');
+        $totalPoAmount = PoGppo::sum('amount');
+
+        // =========================
+        // JO STATUS GROUPED
+        // =========================
+        $joStatuses = JoEvaluation::selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        $approvedJo = ($joStatuses['operation_approved'] ?? 0)
+                    + ($joStatuses['evaluation_approved'] ?? 0);
+
+        $rejectedJo = ($joStatuses['operation_rejected'] ?? 0)
+                    + ($joStatuses['procurement_rejected'] ?? 0);
+
+        $releasedJo = $joStatuses['payment_for_release'] ?? 0;
+        $pendingJo  = $joStatuses['pending'] ?? 0;
+
+        // =========================
+        // PO STATUS GROUPED
+        // =========================
+        $poStatuses = PoGppo::selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        $approvedPo  = $poStatuses['approved'] ?? 0;
+        $continuedPo = $poStatuses['continued'] ?? 0;
+        $releasedPo  = $poStatuses['released'] ?? 0;
+        $returnedPo  = $poStatuses['returned_for_compliance'] ?? 0;
+        $pendingPo   = $poStatuses['pending'] ?? 0;
+
+        // =========================
+        // 
+        // =========================
+        $pendingJoAmount = JoEvaluation::where('status', 'pending')->sum('amount');
+        $releasedJoAmount = JoEvaluation::where('status', 'payment_for_release')->sum('amount');
+
+        $pendingPoAmount = PoGppo::where('status', 'pending')->sum('amount');
+        $releasedPoAmount = PoGppo::where('status', 'released')->sum('amount');
+
+        // =========================
+        // MONTHLY JO AMOUNT
+        // =========================
+        $joMonthly = JoEvaluation::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month');
+
+        // =========================
+        // MONTHLY PO AMOUNT
+        // =========================
+        $poMonthly = PoGppo::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month');
+
+        // =========================
+        // RETURN VIEW
+        // =========================
+        return view('finance.dashboard', compact(
+            'allJo',
+            'allPo',
+            'totalJoAmount',
+            'totalPoAmount',
+            'approvedJo',
+            'rejectedJo',
+            'releasedJo',
+            'pendingJo',
+            'approvedPo',
+            'continuedPo',
+            'releasedPo',
+            'returnedPo',
+            'pendingPo',
+            'joMonthly',
+            'poMonthly',
+            'pendingJoAmount',
+            'releasedJoAmount',
+            'pendingPoAmount',
+            'releasedPoAmount',
+        ));
+    }
 
 
     public function operationsDashboard()
-    {
-        $pendingReview = JoEvaluation::where(
-            'status',
-            'for_operation_review'
-        )->count();
+    {  // =========================
+    // BASIC TOTALS
+    // =========================
+    $allJo = JoEvaluation::count();
+    $allPo = PoGppo::count();
 
-        $approved = JoEvaluation::where(
-            'status',
-            'operation_approved'
-        )->count();
+    $totalJoAmount = JoEvaluation::sum('amount');
+    $totalPoAmount = PoGppo::sum('amount');
 
-        $rejected = JoEvaluation::where(
-            'status',
-            'operation_rejected'
-        )->count();
+    // =========================
+    // JO STATUS GROUPED
+    // =========================
+    $joStatuses = JoEvaluation::selectRaw('status, COUNT(*) as total')
+        ->groupBy('status')
+        ->pluck('total', 'status');
 
-        return view('operation.dashboard', compact(
-            'pendingReview',
-            'approved',
-            'rejected'
-        ));
+    $approvedJo = ($joStatuses['operation_approved'] ?? 0)
+                + ($joStatuses['evaluation_approved'] ?? 0);
+
+    $rejectedJo = ($joStatuses['operation_rejected'] ?? 0)
+                + ($joStatuses['procurement_rejected'] ?? 0);
+
+    $releasedJo = $joStatuses['payment_for_release'] ?? 0;
+    $pendingJo  = $joStatuses['pending'] ?? 0;
+
+    // =========================
+    // PO STATUS GROUPED
+    // =========================
+    $poStatuses = PoGppo::selectRaw('status, COUNT(*) as total')
+        ->groupBy('status')
+        ->pluck('total', 'status');
+
+    $approvedPo  = $poStatuses['approved'] ?? 0;
+    $continuedPo = $poStatuses['continued'] ?? 0;
+    $releasedPo  = $poStatuses['released'] ?? 0;
+    $returnedPo  = $poStatuses['returned_for_compliance'] ?? 0;
+    $pendingPo   = $poStatuses['pending'] ?? 0;
+
+    // =========================
+    // 
+    // =========================
+    $pendingJoAmount = JoEvaluation::where('status', 'pending')->sum('amount');
+    $releasedJoAmount = JoEvaluation::where('status', 'payment_for_release')->sum('amount');
+
+    $pendingPoAmount = PoGppo::where('status', 'pending')->sum('amount');
+    $releasedPoAmount = PoGppo::where('status', 'released')->sum('amount');
+
+    // =========================
+    // MONTHLY JO AMOUNT
+    // =========================
+    $joMonthly = JoEvaluation::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('total', 'month');
+
+    // =========================
+    // MONTHLY PO AMOUNT
+    // =========================
+    $poMonthly = PoGppo::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('total', 'month');
+
+    // =========================
+    // RETURN VIEW
+    // =========================
+    return view('opretation.dashboard', compact(
+        'allJo',
+        'allPo',
+        'totalJoAmount',
+        'totalPoAmount',
+        'approvedJo',
+        'rejectedJo',
+        'releasedJo',
+        'pendingJo',
+        'approvedPo',
+        'continuedPo',
+        'releasedPo',
+        'returnedPo',
+        'pendingPo',
+        'joMonthly',
+        'poMonthly',
+        'pendingJoAmount',
+        'releasedJoAmount',
+        'pendingPoAmount',
+        'releasedPoAmount',
+    ));
     }
 }
