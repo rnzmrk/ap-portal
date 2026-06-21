@@ -29,7 +29,7 @@ class UpdatePoGppoRequest extends FormRequest
                 'invoice_no' => ['required', 'string'],
                 'po_no' => ['required', 'string'],
                 'amount' => ['required', 'string'],
-                'files.*' => ['nullable', 'file', 'mimes:pdf,jpg,png,doc,docx'],
+                'files.*' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:2048'],
                 'removed_files' => ['nullable', 'string'],
             ];
         }

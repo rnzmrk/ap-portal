@@ -32,7 +32,7 @@ class StorePoGppoRequest extends FormRequest
             'files.*' => [
                 'file',
                 'mimes:pdf,jpg,jpeg,png,doc,docx',
-                'max:10240',
+                'max:2048',
             ],
         ];
     }
