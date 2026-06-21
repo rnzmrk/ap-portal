@@ -102,8 +102,14 @@ class PoGppoService
 
 public function store(StorePoGppoRequest $request): PoGppo
 {
-    dd($request->all(), $request->file('files'));
-    $files = [];
+                    dd([
+                    'all' => $request->all(),
+                    'allFiles' => $request->allFiles(),
+                    'hasFile' => $request->hasFile('files'),
+                    'files' => $request->file('files'),
+                    'request_files' => $_FILES,
+                ]);
+
 
     if ($request->hasFile('files')) {
         foreach ($request->file('files') as $file) {
