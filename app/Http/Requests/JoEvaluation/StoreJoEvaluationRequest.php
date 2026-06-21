@@ -27,7 +27,8 @@ class StoreJoEvaluationRequest extends FormRequest
             'accomplishment_no' => ['required', 'string'],
             'jo_reference' => ['required', 'string'],
             'amount' => ['required', 'string'],
-            'files.*' => ['nullable', 'file', 'mimes:pdf,jpg,png,doc,docx'],
+            'files' => ['required'],
+            'files.*' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:2048'],
         ];
     }
 }

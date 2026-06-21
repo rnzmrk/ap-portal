@@ -85,6 +85,15 @@
                     @error('files')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
+                    @if ($errors->has('files.*'))
+                        <div class="mt-2 space-y-1">
+                            @foreach ($errors->get('files.*') as $messages)
+                                @foreach ($messages as $message)
+                                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                                @endforeach
+                            @endforeach
+                        </div>
+                    @endif
 
                     <div id="selected-files" class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 hidden">
                         <p class="text-sm font-medium text-slate-700 mb-2">Selected files</p>

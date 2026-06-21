@@ -91,6 +91,15 @@
                     @error('files')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
+                    @if ($errors->has('files.*'))
+                        <div class="mt-2 space-y-1">
+                            @foreach ($errors->get('files.*') as $messages)
+                                @foreach ($messages as $message)
+                                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                                @endforeach
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Buttons -->
