@@ -56,6 +56,8 @@ class UpdatePoGppoRequest extends FormRequest
 
         dd([
             'validation_errors' => $validator->errors()->toArray(),
+            'content_length_header' => request()->header('Content-Length'),
+            'content_type_header' => request()->header('Content-Type'),
             'request_all' => $this->all(),
             'request_files' => $this->allFiles(),
             'raw_post' => $_POST,
