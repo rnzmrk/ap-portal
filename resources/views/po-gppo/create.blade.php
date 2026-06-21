@@ -65,9 +65,13 @@
                     <label class="block text-sm font-medium text-slate-700 mb-2">
                         Files
                     </label>
-                    <input id="file-input" type="file" name="files[]" multiple
+                    <input  id="file-input"
+                            type="file"
+                            name="files[]"
+                            multiple
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                         class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('files') border-red-500 @enderror"
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        >
                     <p class="text-slate-500 text-sm mt-1">Accepted: PDF, DOC, DOCX, JPG, PNG</p>
                     @error('files')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -92,84 +96,39 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const fileInput = document.getElementById('file-input');
-        const selectedFilesContainer = document.getElementById('selected-files');
-        const selectedFilesList = selectedFilesContainer.querySelector('ul');
-        const fileCountBadge = document.createElement('span');
-        const selectedFiles = [];
+document.addEventListener('DOMContentLoaded', function () {
+    const fileInput = document.getElementById('file-input');
+    const selectedFilesContainer = document.getElementById('selected-files');
+    const selectedFilesList = selectedFilesContainer.querySelector('ul');
 
-        fileCountBadge.className = 'text-xs text-slate-500';
-        fileCountBadge.textContent = 'No files selected';
-        selectedFilesContainer.querySelector('p').appendChild(fileCountBadge);
+    fileInput.addEventListener('change', function () {
+        selectedFilesList.innerHTML = '';
 
-        function updateFileInput() {
-            const dt = new DataTransfer();
-            selectedFiles.forEach((file) => dt.items.add(file));
-            fileInput.files = dt.files;
+        if (!this.files.length) {
+            selectedFilesContainer.classList.add('hidden');
+            return;
         }
 
-        function renderSelectedFiles() {
-            selectedFilesList.innerHTML = '';
+        Array.from(this.files).forEach(file => {
+            const li = document.createElement('li');
 
-            if (selectedFiles.length === 0) {
-                selectedFilesContainer.classList.add('hidden');
-                fileCountBadge.textContent = 'No files selected';
-                return;
-            }
+            li.className = 'flex items-center justify-between gap-3 rounded-md bg-white p-3 border border-slate-200';
 
-            selectedFiles.forEach((file, index) => {
-                const listItem = document.createElement('li');
-                listItem.className = 'flex items-center justify-between gap-3 rounded-md bg-white p-3 border border-slate-200';
-                listItem.innerHTML = `
-                    <div class="min-w-0">
-                        <p class="truncate font-medium">${file.name}</p>
-                        <p class="text-slate-500 text-xs">${(file.size / 1024).toFixed(1)} KB</p>
-                    </div>
-                    <button type="button" class="text-red-600 hover:text-red-800 text-xs font-medium remove-file" data-index="${index}">
-                        Remove
-                    </button>
-                `;
+            li.innerHTML = `
+                <div>
+                    <p class="font-medium">${file.name}</p>
+                    <p class="text-xs text-slate-500">
+                        ${(file.size / 1024).toFixed(1)} KB
+                    </p>
+                </div>
+            `;
 
-                selectedFilesList.appendChild(listItem);
-            });
-
-            selectedFilesContainer.classList.remove('hidden');
-            fileCountBadge.textContent = `${selectedFiles.length} file${selectedFiles.length === 1 ? '' : 's'} selected`;
-        }
-
-        fileInput.addEventListener('change', function () {
-            const newFiles = Array.from(fileInput.files);
-            fileInput.value = '';
-
-            newFiles.forEach((file) => {
-                const duplicate = selectedFiles.some((existing) =>
-                    existing.name === file.name && existing.size === file.size && existing.lastModified === file.lastModified
-                );
-
-                if (!duplicate) {
-                    selectedFiles.push(file);
-                }
-            });
-
-            updateFileInput();
-            renderSelectedFiles();
+            selectedFilesList.appendChild(li);
         });
 
-        selectedFilesList.addEventListener('click', function (event) {
-            const button = event.target.closest('.remove-file');
-            if (!button) {
-                return;
-            }
-
-            const index = Number(button.dataset.index);
-            selectedFiles.splice(index, 1);
-            updateFileInput();
-            renderSelectedFiles();
-        });
-
-        renderSelectedFiles();
+        selectedFilesContainer.classList.remove('hidden');
     });
+});
 </script>
 
 @endsection
