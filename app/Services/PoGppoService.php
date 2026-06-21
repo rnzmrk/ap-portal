@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Enums\PoGppoStatusEnum;
 use App\Enums\RoleEnum;
 
+
 use App\Http\Requests\PoGppo\StorePoGppoRequest;
 use App\Http\Requests\PoGppo\UpdatePoGppoRequest;
 
@@ -23,6 +24,7 @@ class PoGppoService
     public function __construct(
         protected AuditLogService $auditLogService,
         protected MailService $mailService,
+
     ) {}
 
 

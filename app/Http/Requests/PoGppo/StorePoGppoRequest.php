@@ -21,12 +21,18 @@ class StorePoGppoRequest extends FormRequest
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-        return [
-            'invoice_no' => ['required', 'string'],
-            'po_no' => ['required', 'string'],
-            'amount' => ['required', 'string'],
-            'files.*' => ['required', 'file', 'mimes:pdf,jpg,png,doc,docx'],
-        ];
-    }
+        {
+            return [
+                'invoice_no' => ['required', 'string'],
+                'po_no' => ['required', 'string'],
+                'amount' => ['required', 'numeric'],
+
+                'files' => ['required', 'array'],
+                'files.*' => [
+                    'file',
+                    'mimes:pdf,jpg,jpeg,png,doc,docx',
+                    'max:10240'
+                ],
+            ];
+        }
 }
