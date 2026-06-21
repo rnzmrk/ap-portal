@@ -42,4 +42,29 @@ class UpdatePoGppoRequest extends FormRequest
             'release_location' => ['nullable', 'string'],
         ];
     }
+
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        if (app()->runningUnitTests()) {
+            parent::failedValidation($validator);
+        }
+
+        $filesInfo = [];
+        if (isset($_FILES['files'])) {
+            $filesInfo = $_FILES['files'];
+        }
+
+        dd([
+            'validation_errors' => $validator->errors()->toArray(),
+            'request_all' => $this->all(),
+            'request_files' => $this->allFiles(),
+            'raw_post' => $_POST,
+            'raw_files' => $filesInfo,
+            'php_ini' => [
+                'upload_max_filesize' => ini_get('upload_max_filesize'),
+                'post_max_size' => ini_get('post_max_size'),
+                'max_file_uploads' => ini_get('max_file_uploads'),
+            ]
+        ]);
+    }
 }
