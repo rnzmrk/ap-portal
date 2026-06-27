@@ -10,7 +10,7 @@
     font-size:24px;
     font-weight:700;
 ">
-    Billing Successfully Continued
+    Billing Successfully Countered/Receive
 </h2>
 
 <p style="
