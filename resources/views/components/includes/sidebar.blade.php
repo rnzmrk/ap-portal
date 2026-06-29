@@ -40,7 +40,7 @@
                 : 'hover:bg-red-600/60' }}">
 
             <i class="bi bi-file-earmark-text-fill"></i>
-            <span>PO-GPPO</span>
+            <span>Invoice Submission (goods)</span>
         </a>
 
         <!-- JO Evaluation -->

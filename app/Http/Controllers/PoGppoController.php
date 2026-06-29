@@ -17,10 +17,12 @@ class PoGppoController extends Controller
 
     public function index(Request $request)
     {
-        $search = $request->query('search');
-        $status = $request->query('status');
-
-        $records = $this->poGppoService->getRecords($search, $status);
+        $records = $this->poGppoService->getRecords(
+            $request->search,
+            $request->status,
+            $request->from_date,
+            $request->to_date
+        );
 
         return view('po-gppo.index', compact('records'));
     }

@@ -1,7 +1,6 @@
-```blade
 @extends('components.email')
 
-@section('title', 'Continuing Completed')
+@section('title', 'Payment Successfully Released')
 
 @section('content')
 
@@ -11,7 +10,7 @@
     font-size:24px;
     font-weight:700;
 ">
-    Continuing Completed
+    Payment Successfully Released
 </h2>
 
 <p style="
@@ -27,24 +26,14 @@
     font-size:15px;
     line-height:1.8;
 ">
-    We are pleased to inform you that the continuing process for your billing has been completed successfully.
+    We are pleased to inform you that your payment has been successfully released.
 </p>
-
-<p style="
-    margin-top:24px;
-    color:#4b5563;
-    font-size:15px;
-    line-height:1.8;
-">
-    You will receive another notification regarding the next stage of processing.
-</p>
-
+<br/>
 <p style="
     color:#4b5563;
     font-size:15px;
 ">
-    Thank you for your cooperation.
+    Thank you for doing business with us.
 </p>
 
 @endsection
-```

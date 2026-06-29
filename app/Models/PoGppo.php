@@ -11,13 +11,15 @@ class PoGppo extends Model
         'user_id',
         'invoice_no',
         'po_no',
+        'dr_no',
+        'grpo',
         'amount',
         'files',
         'status',
-        'return_reason',
-        'payment_details',
+        'amount_details',
         'check_no',
         'release_location',
+        'return_reason',
     ];
 
     protected $casts = [

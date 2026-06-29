@@ -41,7 +41,7 @@
                 </div>
 
                 <div>
-                    <p class="text-sm text-slate-500">JO Reference</p>
+                    <p class="text-sm text-slate-500">JO No</p>
                     <p class="mt-1 text-base font-semibold text-slate-800">{{ $joEvaluation->jo_reference }}</p>
                 </div>
 
@@ -57,7 +57,7 @@
                     <p class="mt-1 text-base font-semibold text-slate-800">{{ ucfirst(str_replace('_', ' ', $joEvaluation->status)) }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-slate-500">Created At</p>
+                    <p class="text-sm text-slate-500">Submitted Date</p>
                     <p class="mt-1 text-base font-semibold text-slate-800">{{ $joEvaluation->created_at->format('M d, Y h:i A') }}</p>
                 </div>
             </div>

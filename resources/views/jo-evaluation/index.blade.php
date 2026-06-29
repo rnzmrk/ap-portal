@@ -42,63 +42,60 @@
     <!-- Search + Filter -->
     <div class="bg-white rounded-xl shadow-sm p-4">
 
-        <form method="GET" class="grid md:grid-cols-3 gap-3">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-3">
 
+            <!-- Search -->
             <input
                 type="text"
                 name="search"
                 value="{{ request('search') }}"
-                placeholder="Search invoice, accomplishment, or JO reference..."
-                class="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-red-500">
+                placeholder="Search..."
+                class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500">
 
+            <!-- Status -->
             <select name="status" class="border rounded-lg px-3 py-2">
+                <option value="">All Status</option>
 
-                <option value="" {{ request('status') === null || request('status') === '' ? 'selected' : '' }}>All Status</option>
-
-                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-
-                <option value="for_operation_review" {{ request('status') === 'for_operation_review' ? 'selected' : '' }}>
-                    For Operation Review
-                </option>
-
-                <option value="operation_approved" {{ request('status') === 'operation_approved' ? 'selected' : '' }}>
-                    Operation Approved
-                </option>
-
-                <option value="operation_rejected" {{ request('status') === 'operation_rejected' ? 'selected' : '' }}>
-                    Operation Rejected
-                </option>
-
-                <option value="for_procurement_review" {{ request('status') === 'for_procurement_review' ? 'selected' : '' }}>
-                    For Procurement Review
-                </option>
-
-                <option value="evaluation_approved" {{ request('status') === 'evaluation_approved' ? 'selected' : '' }}>
-                    Evaluation Approved
-                </option>
-
-                <option value="procurement_rejected" {{ request('status') === 'procurement_rejected' ? 'selected' : '' }}>
-                    Procurement Rejected
-                </option>
-
-                <option value="continued" {{ request('status') === 'continued' ? 'selected' : '' }}>
-                    Continued
-                </option>
-
-                <option value="payment_for_release" {{ request('status') === 'payment_for_release' ? 'selected' : '' }}>
-                    Payment For Release
-                </option>
+                <option value="pending" {{ request('status')=='pending'?'selected':'' }}>Pending (For Operation)</option>
+                <option value="operation_approved" {{ request('status')=='operation_approved'?'selected':'' }}>Operation Approved</option>
+                <option value="operation_rejected" {{ request('status')=='operation_rejected'?'selected':'' }}>Operation Rejected</option>
+                <option value="evaluation_approved" {{ request('status')=='evaluation_approved'?'selected':'' }}>Evaluation Approved (Proceed For Countering)</option>
+                <option value="procurement_rejected" {{ request('status')=='procurement_rejected'?'selected':'' }}>Procurement Rejected</option>
+                <option value="countered" {{ request('status')=='countered'?'selected':'' }}>Countered/Received</option>
+                <option value="payment_for_release" {{ request('status')=='payment_for_release'?'selected':'' }}>Payment For Release</option>
+                <option value="released" {{ request('status')=='released'?'selected':'' }}>Released</option>
+                <option value="paid" {{ request('status')=='paid'?'selected':'' }}>Paid</option>
 
             </select>
 
-            <div class="flex gap-3">
-                <button type="submit" class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                    Apply
-                </button>
-                <a href="{{ route(auth()->user()->role . '.jo-evaluation.index') }}" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100">
-                    Reset
-                </a>
-            </div>
+            <!-- From -->
+            <input
+                type="date"
+                name="from_date"
+                value="{{ request('from_date') }}"
+                class="border rounded-lg px-3 py-2">
+
+            <!-- To -->
+            <input
+                type="date"
+                name="to_date"
+                value="{{ request('to_date') }}"
+                class="border rounded-lg px-3 py-2">
+
+            <!-- Apply -->
+            <button
+                type="submit"
+                class="bg-red-600 text-white rounded-lg hover:bg-red-700">
+                <i class="bi bi-funnel"></i>
+                Apply Filters
+            </button>
+
+            <!-- Reset -->
+            <a href="{{ route(auth()->user()->role.'.jo-evaluation.index') }}"
+            class="border rounded-lg text-center py-2 hover:bg-slate-100">
+                Reset
+            </a>
+
         </form>
 
     </div>
@@ -113,17 +110,18 @@
                 <thead class="bg-red-600 text-white">
 
                     <tr>
-                        <th class="px-4 py-3 text-left">ID</th>
+                        <th class="px-4 py-3 text-left">#</th>
                         @if($isStaff)
                         <th class="px-4 py-3 text-left">Supplier Name</th>
                         @endif
                         <th class="px-4 py-3 text-left">Invoice No</th>
                         <th class="px-4 py-3 text-left">Accomplishment No</th>
-                        <th class="px-4 py-3 text-left">JO Reference</th>
+                        <th class="px-4 py-3 text-left">JO No</th>
+                        <th class="px-4 py-3 text-left">Dr No</th>
                         <th class="px-4 py-3 text-left">Amount</th>
                         <th class="px-4 py-3 text-left">Status</th>
                         <th class="px-4 py-3 text-left">Files</th>
-                        <th class="px-4 py-3 text-left">Created</th>
+                        <th class="px-4 py-3 text-left">Submitted Dt</th>
                         <th class="px-4 py-3 text-center">Actions</th>
                     </tr>
 
@@ -136,7 +134,7 @@
                         <tr class="border-b hover:bg-slate-50">
 
                             <td class="px-4 py-3">
-                                {{ $record->id }}
+                                {{ $records->firstItem() + $loop->index }}
                             </td>
 
                             @if($isStaff)
@@ -157,6 +155,10 @@
                                 {{ $record->jo_reference }}
                             </td>
 
+                            <td class="px-4 py-3 font-medium">
+                                {{ $record->dr_no ?? '-' }}
+                            </td>
+
                             <td class="px-4 py-3">
                                 ₱ {{ number_format($record->amount, 2) }}
                             </td>
@@ -170,11 +172,6 @@
                                             'class' => 'bg-yellow-100 text-yellow-700'
                                         ],
 
-                                        'for_operation_review' => [
-                                            'label' => 'For Operation Review',
-                                            'class' => 'bg-blue-100 text-blue-700'
-                                        ],
-
                                         'operation_approved' => [
                                             'label' => 'Operation Approved',
                                             'class' => 'bg-green-100 text-green-700'
@@ -183,11 +180,6 @@
                                         'operation_rejected' => [
                                             'label' => 'Operation Rejected',
                                             'class' => 'bg-red-100 text-red-700'
-                                        ],
-
-                                        'for_procurement_review' => [
-                                            'label' => 'For Procurement Review',
-                                            'class' => 'bg-indigo-100 text-indigo-700'
                                         ],
 
                                         'evaluation_approved' => [
@@ -200,14 +192,24 @@
                                             'class' => 'bg-red-100 text-red-700'
                                         ],
 
-                                        'continued' => [
-                                            'label' => 'Continued',
+                                        'countered' => [
+                                            'label' => 'Countered/Recieved',
                                             'class' => 'bg-emerald-100 text-emerald-700'
                                         ],
 
                                         'payment_for_release' => [
                                             'label' => 'Payment For Release',
                                             'class' => 'bg-purple-100 text-purple-700'
+                                        ],
+
+                                        'released' => [
+                                            'label' => 'Released',
+                                            'class' => 'bg-green-100 text-green-700'
+                                        ],
+
+                                        'paid' => [
+                                            'label' => 'Paid',
+                                            'class' => 'bg-green-100 text-green-700'
                                         ],
 
                                     ];
@@ -268,7 +270,7 @@
 
                         <tr>
 
-                            <td colspan="{{ $isStaff ? 10 : 9 }}"
+                            <td colspan="{{ $isStaff ? 11 : 10 }}"
                                 class="text-center py-10 text-slate-500">
 
                                 No JO Evaluation records found.
@@ -285,8 +287,26 @@
 
         </div>
 
-    </div>
+            <div class="border-t bg-slate-50 px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-</div>
+                <div class="text-sm text-slate-600">
+                    Showing
+                    <span class="font-semibold">{{ $records->firstItem() ?? 0 }}</span>
+                    to
+                    <span class="font-semibold">{{ $records->lastItem() ?? 0 }}</span>
+                    of
+                    <span class="font-semibold">{{ $records->total() }}</span>
+                    records
+                </div>
+
+                <div>
+                    {{ $records->onEachSide(1)->links() }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 @endsection

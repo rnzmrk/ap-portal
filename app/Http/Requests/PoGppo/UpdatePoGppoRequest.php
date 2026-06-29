@@ -28,8 +28,10 @@ class UpdatePoGppoRequest extends FormRequest
             return [
                 'invoice_no' => ['required', 'string'],
                 'po_no' => ['required', 'string'],
+                'dr_no' => ['required', 'string'],
+                'grpo' => ['required', 'string'],
                 'amount' => ['required', 'string'],
-                'files.*' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:2048'],
+                'files.*' => ['nullable', 'file', 'mimes:pdf', 'max:2048'],
                 'removed_files' => ['nullable', 'string'],
             ];
         }
@@ -37,7 +39,7 @@ class UpdatePoGppoRequest extends FormRequest
         return [
             'status' => ['required', new Enum(PoGppoStatusEnum::class)],
             'return_reason' => ['nullable', 'string'],
-            'payment_details' => ['nullable', 'string'],
+            'amount_details' => ['nullable', 'string'],
             'check_no' => ['nullable', 'string'],
             'release_location' => ['nullable', 'string'],
         ];

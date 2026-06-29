@@ -5,14 +5,18 @@ namespace App\Services;
 use App\Models\JoEvaluation;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\JoEvaluationStatusEnum;
+use App\Enums\RoleEnum;
 use App\Http\Requests\JoEvaluation\StoreJoEvaluationRequest;
 use App\Http\Requests\JoEvaluation\UpdateJoEvaluationRequest;
 
 use App\Mail\JoEvaluation\SubmittedMail;
 use App\Mail\JoEvaluation\OperationRejectedMail;
 use App\Mail\JoEvaluation\EvaluationApprovedMail;
-use App\Mail\JoEvaluation\ContinuedMail;
 use App\Mail\JoEvaluation\PaymentForReleaseMail;
+use App\Mail\JoEvaluation\CounteredMail;
+use App\Mail\JoEvaluation\PaidMail;
+use App\Mail\JoEvaluation\ReleasedMail;
+
 
 class JoEvaluationService
 {
@@ -56,11 +60,17 @@ class JoEvaluationService
             JoEvaluationStatusEnum::EVALUATION_APPROVED =>
                 $this->mailService->send($email, new EvaluationApprovedMail($joEvaluation)),
 
-            JoEvaluationStatusEnum::CONTINUED =>
-                $this->mailService->send($email, new ContinuedMail($joEvaluation)),
+            JoEvaluationStatusEnum::COUNTERED =>
+                $this->mailService->send($email, new CounteredMail($joEvaluation)),
 
             JoEvaluationStatusEnum::PAYMENT_FOR_RELEASE =>
                 $this->mailService->send($email, new PaymentForReleaseMail($joEvaluation)),
+
+            JoEvaluationStatusEnum::RELEASED =>
+            $this->mailService->send($email, new ReleasedMail($joEvaluation)),
+
+            JoEvaluationStatusEnum::PAID =>
+                $this->mailService->send($email, new PaidMail($joEvaluation)),
 
             default => null,
         };
@@ -71,26 +81,56 @@ class JoEvaluationService
      * =========================
      */
 
-    public function getRecords(?string $search = null, $status = null)
+
+    public function getRecords(?string $search = null, $status = null, ?string $fromDate = null, ?string $toDate = null)
     {
         return JoEvaluation::with('user')
             ->latest()
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('invoice_no', 'like', "%{$search}%")
-                        ->orWhere('accomplishment_no', 'like', "%{$search}%")
-                        ->orWhere('jo_reference', 'like', "%{$search}%");
-                });
-            })
-            ->when($status, function ($query, $status) {
 
-                if ($status instanceof JoEvaluationStatusEnum) {
-                    $status = $status->value;
-                }
-                $query->where('status', $status);
+            ->when($search, function ($query, $search) {
+
+                $query->where(function ($q) use ($search) {
+
+                    $q->where('invoice_no','like',"%{$search}%")
+                    ->orWhere('accomplishment_no','like',"%{$search}%")
+                    ->orWhere('jo_reference','like',"%{$search}%")
+
+                    ->orWhereHas('user', function($u) use ($search){
+
+                            $u->where('name','like',"%{$search}%");
+
+                    });
+
+                });
+
             })
-            ->get();
+
+            ->when($status,function($query,$status){
+
+                if($status instanceof JoEvaluationStatusEnum){
+                    $status=$status->value;
+                }
+
+                $query->where('status',$status);
+
+            })
+
+            ->when($fromDate,function($query,$fromDate){
+
+                $query->whereDate('created_at','>=',$fromDate);
+
+            })
+
+            ->when($toDate,function($query,$toDate){
+
+                $query->whereDate('created_at','<=',$toDate);
+
+            })
+
+            ->paginate(15)
+            ->withQueryString();
     }
+
 
     /**
      * =========================
@@ -116,10 +156,16 @@ class JoEvaluationService
             'invoice_no' => $request->invoice_no,
             'accomplishment_no' => $request->accomplishment_no,
             'jo_reference' => $request->jo_reference,
+            'dr_no' => $request->dr_no,
             'amount' => $request->amount,
             'files' => $files,
             'status' => JoEvaluationStatusEnum::PENDING,
         ]);
+
+        $this->mailService->sendToRole(
+            RoleEnum::FINANCE->value,
+            new SubmittedMail($record)
+        );
 
         $this->mailService->send(
             Auth::user()->email,
@@ -190,6 +236,28 @@ class JoEvaluationService
                     'path' => $file->store('jo-evaluation', 'public'),
                 ];
             }
+        }
+        $evaluationFiles = [];
+
+        // Keep existing files
+        if (is_array($joEvaluation->evaluation_files)) {
+            foreach ($joEvaluation->evaluation_files as $file) {
+                $evaluationFiles[] = $file;
+            }
+        }
+
+        // Upload new files
+        if ($request->hasFile('evaluation_files')) {
+            foreach ($request->file('evaluation_files') as $file) {
+                $evaluationFiles[] = [
+                    'original_name' => $file->getClientOriginalName(),
+                    'path' => $file->store('evaluation-files', 'public'),
+                ];
+            }
+        }
+
+        if (!empty($evaluationFiles)) {
+            $data['evaluation_files'] = $evaluationFiles;
         }
 
         if (!empty($files)) {

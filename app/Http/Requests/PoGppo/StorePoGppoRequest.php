@@ -26,12 +26,14 @@ class StorePoGppoRequest extends FormRequest
         return [
             'invoice_no' => ['required', 'string'],
             'po_no' => ['required', 'string'],
+            'dr_no' => ['required', 'string'],
+            'grpo' => ['required', 'string'],
             'amount' => ['required', 'numeric'],
 
             'files' => ['required'],
             'files.*' => [
                 'file',
-                'mimes:pdf,jpg,jpeg,png,doc,docx',
+                'mimes:pdf',
                 'max:2048',
             ],
         ];

@@ -50,12 +50,25 @@
                 <!-- JO Reference -->
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-2">
-                        JO Reference
+                        JO No
                     </label>
                     <input type="text" name="jo_reference" placeholder="Enter JO reference"
                         class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('jo_reference') border-red-500 @enderror"
                         value="{{ old('jo_reference') }}" required>
                     @error('jo_reference')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- DR No -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">
+                        DR No
+                    </label>
+                    <input type="text" name="dr_no" placeholder="Enter DR No"
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('dr_no') border-red-500 @enderror"
+                        value="{{ old('dr_no') }}" required>
+                    @error('dr_no')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
@@ -81,7 +94,7 @@
                     <input id="file-input" type="file" name="files[]" multiple
                         class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('files') border-red-500 @enderror"
                         accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                    <p class="text-slate-500 text-sm mt-1">Accepted: PDF, DOC, DOCX, JPG, PNG</p>
+                    <p class="text-slate-500 text-sm mt-1">Accepted: PDF</p>
                     @error('files')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror

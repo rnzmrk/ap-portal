@@ -1,16 +1,16 @@
 @extends('components.email')
 
-@section('title', 'Payment Successfully Released')
+@section('title', 'Billing Successfully Countered/Receive')
 
 @section('content')
 
 <h2 style="
     margin-top:0;
-    color:#166534;
+    color:#2563eb;
     font-size:24px;
     font-weight:700;
 ">
-    Payment Successfully Released
+    Billing Successfully Countered/Receive
 </h2>
 
 <p style="
@@ -18,7 +18,7 @@
     font-size:15px;
     line-height:1.8;
 ">
-    Dear <strong>{{ $poGppo->supplier->name ?? 'Supplier' }}</strong>,
+    Dear <strong>{{ $joEvaluation->user->name ?? 'Supplier' }}</strong>,
 </p>
 
 <p style="
@@ -26,14 +26,16 @@
     font-size:15px;
     line-height:1.8;
 ">
-    We are pleased to inform you that your payment has been successfully released.
+    Your billing documents have been successfully continued and accepted for processing.
 </p>
-<br/>
+
 <p style="
     color:#4b5563;
     font-size:15px;
 ">
-    Thank you for doing business with us.
+    Thank you for your continued cooperation.
 </p>
+
+<br/>
 
 @endsection

@@ -26,9 +26,10 @@ class StoreJoEvaluationRequest extends FormRequest
             'invoice_no' => ['required', 'string'],
             'accomplishment_no' => ['required', 'string'],
             'jo_reference' => ['required', 'string'],
+            'dr_no' => ['required', 'string'],
             'amount' => ['required', 'string'],
             'files' => ['required'],
-            'files.*' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:2048'],
+            'files.*' => ['nullable', 'file', 'mimes:pdf', 'max:2048'],
         ];
     }
 }

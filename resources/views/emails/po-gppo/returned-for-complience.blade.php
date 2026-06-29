@@ -1,4 +1,4 @@
-```blade
+
 @extends('components.email')
 
 @section('title', 'Billing Returned for Compliance')
@@ -79,4 +79,3 @@
 </p>
 
 @endsection
-```

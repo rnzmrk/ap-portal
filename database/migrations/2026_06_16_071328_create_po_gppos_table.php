@@ -16,16 +16,18 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('invoice_no');
             $table->string('po_no');
+            $table->string('dr_no');
+            $table->string('grpo');
             $table->string('amount');
 
             $table->json('files')->nullable();
 
-            $table->string('status')->default('submitted');
+            $table->string('check_no')->nullable();
+            $table->text('amount_details')->nullable();
+            $table->string('release_location')->nullable();
 
             $table->text('return_reason')->nullable();
-            $table->text('payment_details')->nullable();
-            $table->string('check_no')->nullable();
-            $table->string('release_location')->nullable();
+            $table->string('status')->default('submitted');
 
             $table->timestamps();
         });

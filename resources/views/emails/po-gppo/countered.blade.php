@@ -1,7 +1,7 @@
-```blade
+
 @extends('components.email')
 
-@section('title', 'Billing Approved for Continuing')
+@section('title', 'Countered Completed')
 
 @section('content')
 
@@ -11,7 +11,7 @@
     font-size:24px;
     font-weight:700;
 ">
-    Billing Approved for Continuings
+    Countered Completed
 </h2>
 
 <p style="
@@ -27,8 +27,7 @@
     font-size:15px;
     line-height:1.8;
 ">
-    We are pleased to inform you that your billing has been
-    <strong>approved for continuing processing</strong>.
+    We are pleased to inform you that the countering process for your billing has been completed successfully.
 </p>
 
 <p style="
@@ -37,15 +36,7 @@
     font-size:15px;
     line-height:1.8;
 ">
-    Please bring the required original documents to the Head Office for verification and further processing.
-</p>
-
-<p style="
-    color:#4b5563;
-    font-size:15px;
-    line-height:1.8;
-">
-    You will receive another notification regarding any further updates to your billing.
+    You will receive another notification regarding the next stage of processing.
 </p>
 
 <p style="
@@ -56,4 +47,3 @@
 </p>
 
 @endsection
-```

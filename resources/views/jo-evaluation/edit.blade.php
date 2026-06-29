@@ -30,121 +30,8 @@
                 @csrf
                 @method('PUT')
 
-                @if(auth()->user()->role === 'supplier')
-                    <!-- Supplier Edit View - Full Form -->
-
-                    <!-- Invoice No -->
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">
-                            Invoice No
-                        </label>
-                        <input type="text" name="invoice_no" placeholder="Enter invoice number"
-                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('invoice_no') border-red-500 @enderror"
-                            value="{{ old('invoice_no', $joEvaluation->invoice_no) }}" required>
-                        @error('invoice_no')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Accomplishment No -->
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">
-                            Accomplishment No
-                        </label>
-                        <input type="text" name="accomplishment_no" placeholder="Enter accomplishment number"
-                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('accomplishment_no') border-red-500 @enderror"
-                            value="{{ old('accomplishment_no', $joEvaluation->accomplishment_no) }}" required>
-                        @error('accomplishment_no')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- JO Reference -->
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">
-                            JO Reference
-                        </label>
-                        <input type="text" name="jo_reference" placeholder="Enter JO reference"
-                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('jo_reference') border-red-500 @enderror"
-                            value="{{ old('jo_reference', $joEvaluation->jo_reference) }}" required>
-                        @error('jo_reference')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Amount -->
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">
-                            Amount
-                        </label>
-                        <input type="number" name="amount" placeholder="Enter amount" step="0.01"
-                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('amount') border-red-500 @enderror"
-                            value="{{ old('amount', $joEvaluation->amount) }}" required>
-                        @error('amount')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Files -->
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">
-                            Files
-                        </label>
-                        <input id="file-input" type="file" name="files[]" multiple
-                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('files') border-red-500 @enderror"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                        <p class="text-slate-500 text-sm mt-1">Accepted: PDF, DOC, DOCX, JPG, PNG</p>
-                        @error('files')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                        @if ($errors->has('files.*'))
-                            <div class="mt-2 space-y-1">
-                                @foreach ($errors->get('files.*') as $messages)
-                                    @foreach ($messages as $message)
-                                        <p class="text-red-500 text-sm">{{ $message }}</p>
-                                    @endforeach
-                                @endforeach
-                            </div>
-                        @endif
-
-                        <!-- Existing Files -->
-                        @if(!empty($joEvaluation->files) && is_array($joEvaluation->files))
-                        <div class="mt-4 rounded-lg border border-slate-200 bg-blue-50 p-4">
-                            <p class="text-sm font-medium text-slate-700 mb-2">Existing files ({{ count($joEvaluation->files) }})</p>
-                            <ul class="space-y-2 text-sm" id="existing-files-list">
-                                @foreach($joEvaluation->files as $index => $file)
-                                @php
-                                    $path = is_array($file) ? ($file['path'] ?? '') : $file;
-                                    $name = is_array($file) ? ($file['original_name'] ?? basename($path)) : basename($path);
-                                @endphp
-                                <li class="flex items-center justify-between gap-3 rounded-md bg-white p-3 border border-slate-200" data-file-index="{{ $index }}" data-file-path="{{ $path }}">
-                                    <div class="min-w-0 flex-1">
-                                        <p class="truncate font-medium text-slate-800">{{ $name }}</p>
-                                        <p class="text-slate-500 text-xs">{{ $path }}</p>
-                                    </div>
-                                    <div class="flex gap-2 whitespace-nowrap">
-                                        <a href="{{ route('jo-evaluation.file', ['joEvaluation' => $joEvaluation->id, 'index' => $index, 'download' => 1]) }}"
-                                           class="text-blue-600 hover:text-blue-800 text-xs font-medium">
-                                            Download
-                                        </a>
-                                        <button type="button" class="text-red-600 hover:text-red-800 text-xs font-medium remove-existing-file">
-                                            Remove
-                                        </button>
-                                    </div>
-                                </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        @endif
-
-                        <div id="selected-files" class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 hidden">
-                            <p class="text-sm font-medium text-slate-700 mb-2">New files to upload</p>
-                            <ul class="space-y-2 text-sm text-slate-700"></ul>
-                        </div>
-                    </div>
-
-                @else
-                    <!-- Non-Supplier Edit View - Status Only -->
+                @if(auth()->user()->role != 'supplier')
+                    <!-- Not Supplier Edit View - Full Form -->
 
                     <!-- Read-only Display of JO Details -->
                     <div class="grid gap-6 md:grid-cols-2 p-4 bg-slate-50 rounded-lg">
@@ -157,8 +44,12 @@
                             <p class="mt-1 text-base font-semibold text-slate-800">{{ $joEvaluation->accomplishment_no }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-slate-500">JO Reference</p>
+                            <p class="text-sm text-slate-500">JO No</p>
                             <p class="mt-1 text-base font-semibold text-slate-800">{{ $joEvaluation->jo_reference }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500">DR No</p>
+                            <p class="mt-1 text-base font-semibold text-slate-800">{{ $joEvaluation->dr_no }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-slate-500">Amount</p>
@@ -173,34 +64,131 @@
                         </label>
                         <select name="status" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('status') border-red-500 @enderror" required>
                             <option value="">Select Status</option>
-                            <option value="pending" {{ old('status', $joEvaluation->status) === 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="for_operation_review" {{ old('status', $joEvaluation->status) === 'for_operation_review' ? 'selected' : '' }}>For Operation Review</option>
+                            <option value="pending" {{ old('status', $joEvaluation->status) === 'pending' ? 'selected' : '' }}>Pending (For Operation)</option>s
                             <option value="operation_approved" {{ old('status', $joEvaluation->status) === 'operation_approved' ? 'selected' : '' }}>Operation Approved</option>
                             <option value="operation_rejected" {{ old('status', $joEvaluation->status) === 'operation_rejected' ? 'selected' : '' }}>Operation Rejected</option>
-                            <option value="for_procurement_review" {{ old('status', $joEvaluation->status) === 'for_procurement_review' ? 'selected' : '' }}>For Procurement Review</option>
-                            <option value="evaluation_approved" {{ old('status', $joEvaluation->status) === 'evaluation_approved' ? 'selected' : '' }}>Evaluation Approved</option>
-                            <option value="procurement_rejected" {{ old('status', $joEvaluation->status) === 'procurement_rejected' ? 'selected' : '' }}>Procurement Rejected</option>
-                            <option value="continued" {{ old('status', $joEvaluation->status) === 'continued' ? 'selected' : '' }}>Continued</option>
+                            <option value="evaluation_approved" {{ old('status', $joEvaluation->status) === 'evaluation_approved' ? 'selected' : '' }}>Evaluation Approved (Proceed For Countering)</option>
+                            <option value="procurement_rejected" {{ old('status', $joEvaluation->status) === 'procurement_rejected' ? 'selected' : '' }}>Procurement Rejected</optiosn>
+                            <option value="countered" {{ request('status')=='countered'?'selected':'' }}>Countered/Received</option>
                             <option value="payment_for_release" {{ old('status', $joEvaluation->status) === 'payment_for_release' ? 'selected' : '' }}>Payment For Release</option>
+                            <option value="released" {{ request('status')=='released'?'selected':'' }}>Released</option>
+                            <option value="paid" {{ request('status')=='paid'?'selected':'' }}>Paid</option>
                         </select>
                         @error('status')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    @if($joEvaluation->rejection_reason)
-                        <div class="border-t pt-6">
+                    <div class="border-t pt-6">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            Rejection Reason
+                        </label>
+
+                        <textarea name="rejection_reason" rows="4"
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg"
+                            placeholder="Enter rejection reason">
+                            {{ old('return_reason', $joEvaluation->rejection_reason) }}
+                        </textarea>
+                    </div>
+
+                    <div class="border-t pt-6 grid gap-6 md:grid-cols-2">
+                        <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">
-                                Rejection Reason
+                                Amount Details
                             </label>
-                            <textarea name="rejection_reason" rows="4"
-                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('rejection_reason') border-red-500 @enderror"
-                                placeholder="Enter rejection reason (optional)">{{ old('rejection_reason', $joEvaluation->rejection_reason) }}</textarea>
-                            @error('rejection_reason')
+                            <textarea name="amount_details" rows="3"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('amount_details') border-red-500 @enderror"
+                                placeholder="Enter payment details">{{ old('payment_details', $joEvaluation->amount_details) }}</textarea>
+                            @error('amount_details')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                    @endif
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">
+                                Check No
+                            </label>
+                            <input type="text" name="check_no"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('check_no') border-red-500 @enderror"
+                                value="{{ old('check_no', $joEvaluation->check_no) }}"
+                                placeholder="Enter check number">
+                            @error('check_no')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-2">
+                                Release Location
+                            </label>
+                            <input type="text" name="release_location"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('release_location') border-red-500 @enderror"
+                                value="{{ old('release_location', $joEvaluation->release_location) }}"
+                                placeholder="Enter release location">
+                            @error('release_location')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <!-- Evaluation File -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-2">
+                                Evaluations File <span class="text-red-500">*</span>
+                            </label>
+
+                            <input
+                                id="evaluation-files"
+                                type="file"
+                                name="evaluation_files[]"
+                                accept=".pdf"
+                                multiple
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('evaluation_files') border-red-500 @enderror">
+
+                            <p class="text-slate-500 text-sm mt-1">
+                                Accepted format: PDF only
+                            </p>
+
+                            @error('evaluation_files')
+                                <p class="text-red-500 text-sm mt-1">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+
+                            @if(is_array($joEvaluation->evaluation_files) && count($joEvaluation->evaluation_files))
+
+                                <div class="mt-3 space-y-2">
+
+                                    @foreach($joEvaluation->evaluation_files as $file)
+
+                                        @if(!empty($file['path']))
+
+                                            <a href="{{ Storage::url($file['path']) }}"
+                                            target="_blank"
+                                            class="flex items-center gap-2 text-blue-600 hover:text-blue-800 hover:underline">
+
+                                                <i class="bi bi-file-earmark-pdf-fill text-red-500"></i>
+
+                                                {{ $file['original_name'] ?? basename($file['path']) }}
+
+                                            </a>
+
+                                        @endif
+
+                                    @endforeach
+
+                                </div>
+
+                            @endif
+
+                            <div id="selected-evaluation-file"
+                                class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 hidden">
+
+                                <p class="text-sm font-medium text-slate-700 mb-2">
+                                    Selected File
+                                </p>
+
+                                <div class="text-sm text-slate-700"></div>
+
+                            </div>
+                        </div>
+                    </div>
 
                 @endif
 

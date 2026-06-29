@@ -8,10 +8,10 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-slate-800">
-                Create PO-GPPO
+                Create new Invioce Submission
             </h1>
             <p class="text-sm text-slate-500 mt-1">
-                Submit a new PO-GPPO record.
+                Submit a new Invoice record.
             </p>
         </div>
     </div>
@@ -55,6 +55,34 @@
                     @enderror
                 </div>
 
+                <!-- DR No -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">
+                        DR No
+                    </label>
+                    <input type="text" name="dr_no"
+                        value="{{ old('dr_no') }}"
+                        required
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    @error('dr_no')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- GRPO -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">
+                        GRPO
+                    </label>
+                    <input type="text" name="grpo"
+                        value="{{ old('grpo') }}"
+                        required
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    @error('grpo')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Amount -->
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-2">
@@ -85,7 +113,7 @@
                         class="w-full px-4 py-2 border border-slate-300 rounded-lg">
 
                     <p class="text-slate-500 text-sm mt-1">
-                        Accepted: PDF, DOC, DOCX, JPG, PNG
+                        Accepted: PDF
                     </p>
 
                     @error('files')

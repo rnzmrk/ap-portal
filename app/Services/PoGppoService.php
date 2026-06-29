@@ -13,11 +13,14 @@ use App\Http\Requests\PoGppo\StorePoGppoRequest;
 use App\Http\Requests\PoGppo\UpdatePoGppoRequest;
 
 use App\Mail\PoGppo\SubmittedMail;
-use App\Mail\PoGppo\ApprovedForContinuingMail;
 use App\Mail\PoGppo\ReturnedForComplianceMail;
-use App\Mail\PoGppo\ContinuedMail;
 use App\Mail\PoGppo\CheckReadyForReleaseMail;
 use App\Mail\PoGppo\ReleasedMail;
+use App\Mail\PoGppo\ApprovedForCounteringMail;
+use App\Mail\PoGppo\CounteredMail;
+use App\Mail\PoGppo\PaidMail;
+
+
 
 class PoGppoService
 {
@@ -45,10 +48,10 @@ class PoGppoService
 
         switch ($status) {
 
-            case PoGppoStatusEnum::APPROVED_FOR_CONTINUING:
+            case PoGppoStatusEnum::APPROVED_FOR_COUNTERING:
                 $this->mailService->send(
                     $email,
-                    new ApprovedForContinuingMail($poGppo)
+                    new ApprovedForCounteringMail($poGppo)
                 );
                 break;
 
@@ -59,10 +62,10 @@ class PoGppoService
                 );
                 break;
 
-            case PoGppoStatusEnum::CONTINUED:
+            case PoGppoStatusEnum::COUNTERED:
                 $this->mailService->send(
                     $email,
-                    new ContinuedMail($poGppo)
+                    new CounteredMail($poGppo)
                 );
                 break;
 
@@ -79,26 +82,43 @@ class PoGppoService
                     new ReleasedMail($poGppo)
                 );
                 break;
+            case PoGppoStatusEnum::PAID:
+                $this->mailService->send(
+                    $email,
+                    new PaidMail($poGppo)
+                );
+                break;
         }
     }
 
 
-
-    public function getRecords(?string $search = null, ?string $status = null)
+    public function getRecords(?string $search = null, ?string $status = null, ?string $fromDate = null, ?string $toDate = null)
     {
         return PoGppo::with('supplier')
             ->latest()
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('invoice_no', 'like', "%{$search}%")
-                        ->orWhere('po_no', 'like', "%{$search}%");
+                        ->orWhere('po_no', 'like', "%{$search}%")
+                        ->orWhereHas('supplier', function($u) use ($search){
+
+                            $u->where('name','like',"%{$search}%");
+
+                    });
                 });
             })
             ->when($status, function ($query, $status) {
                 $query->where('status', $status);
             })
-            ->get();
+            ->when($fromDate,function($query,$fromDate){
+
+                $query->whereDate('created_at','>=',$fromDate);
+
+            })
+            ->paginate(15)
+            ->withQueryString();
     }
+
     public function store(StorePoGppoRequest $request): PoGppo
     {
         $files = [];
@@ -116,12 +136,14 @@ class PoGppoService
         'user_id' => Auth::id(),
         'invoice_no' => $request->invoice_no,
         'po_no' => $request->po_no,
+        'dr_no' => $request->dr_no,
+        'grpo' => $request->grpo,
         'amount' => $request->amount,
         'files' => $files,
         'status' => PoGppoStatusEnum::PENDING,
     ]);
 
-    $this->mailService->sendToRole(
+        $this->mailService->sendToRole(
         RoleEnum::FINANCE->value,
         new SubmittedMail($record)
     );

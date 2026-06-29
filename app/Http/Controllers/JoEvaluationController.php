@@ -17,11 +17,12 @@ class JoEvaluationController extends Controller
 
     public function index(Request $request)
     {
-        $search = $request->query('search');
-        $status = $request->query('status');
-
-        $records = $this->joEvaluationService->getRecords($search, $status);
-
+         $records = $this->joEvaluationService->getRecords(
+            $request->search,
+            $request->status,
+            $request->from_date,
+            $request->to_date
+        );
         return view('jo-evaluation.index', compact('records'));
     }
 
@@ -82,6 +83,20 @@ class JoEvaluationController extends Controller
             'Content-Disposition' => 'inline; filename="' . $name . '"',
         ]);
     }
+
+    public function evaluationFile(JoEvaluation $joEvaluation)
+        {
+            $this->authorize('view', $joEvaluation);
+
+            if (!$joEvaluation->evaluation_file) {
+                abort(404);
+            }
+
+            return Storage::disk('public')->response(
+                $joEvaluation->evaluation_file
+            );
+        }
+
 
     public function edit(JoEvaluation $joEvaluation)
     {

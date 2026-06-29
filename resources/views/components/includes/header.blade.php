@@ -1,8 +1,10 @@
-<header class="sticky top-0 z-40 h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between">
+<header class="sticky top-0 z-40 h-16 bg-red-700 border-b border-red-500/40 px-6 flex items-center justify-between shadow-sm">
 
     <!-- Left Side -->
     <div>
-
+        <h2 class="text-lg font-semibold text-white">
+            AP Portal
+        </h2>
     </div>
 
     <!-- Right Side -->
@@ -11,20 +13,20 @@
         <button
             type="button"
             id="user-menu-button"
-            class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-slate-100 transition">
+            class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-red-600/60 transition">
 
             <div class="text-right">
-                <div class="text-sm font-medium text-slate-800">
+                <div class="text-sm font-medium text-white">
                     {{ auth()->user()->name }}
                 </div>
 
-                <div class="text-xs text-slate-500 capitalize">
+                <div class="text-xs text-red-200 capitalize">
                     {{ auth()->user()->role }}
                 </div>
             </div>
 
             <svg xmlns="http://www.w3.org/2000/svg"
-                 class="h-4 w-4 text-slate-500"
+                 class="h-4 w-4 text-red-200"
                  fill="none"
                  viewBox="0 0 24 24">
                 <path d="M19.5 8.25l-7.5 7.5-7.5-7.5"
@@ -39,11 +41,10 @@
         <!-- Dropdown -->
         <div
             id="user-dropdown"
-            class="hidden absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+            class="hidden absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-xl border border-red-100 overflow-hidden">
 
-            <!-- User Info -->
-            <div class="p-4 border-b">
-
+            <!-- User -->
+            <div class="p-4 border-b border-red-100">
                 <h4 class="font-semibold text-slate-800">
                     {{ auth()->user()->name }}
                 </h4>
@@ -52,13 +53,12 @@
                     {{ auth()->user()->email }}
                 </p>
 
-                <span class="text-xs text-slate-400 capitalize">
+                <span class="text-xs text-red-600 capitalize font-medium">
                     {{ auth()->user()->role }}
                 </span>
-
             </div>
 
-            <!-- Logout Only -->
+            <!-- Logout -->
             <div class="py-2">
 
                 <form method="POST" action="{{ route('logout') }}">
@@ -72,7 +72,6 @@
                              class="h-5 w-5"
                              fill="none"
                              viewBox="0 0 24 24">
-
                             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"
                                   stroke="currentColor"
                                   stroke-width="1.5"
@@ -87,13 +86,12 @@
 
                             <line x1="21"
                                   y1="12"
-                                  x2="9"
+                                  x2="9"s
                                   y2="12"
                                   stroke="currentColor"
                                   stroke-width="1.5"
                                   stroke-linecap="round"
                                   stroke-linejoin="round"/>
-
                         </svg>
 
                         Logout

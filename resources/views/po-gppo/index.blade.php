@@ -13,11 +13,11 @@
 
         <div>
             <h1 class="text-2xl font-bold text-slate-800">
-                PO-GPPO Management
+                Invoice Submission Management
             </h1>
 
             <p class="text-sm text-slate-500">
-                Manage all submitted PO-GPPO records.
+                Manage all submitted invoice records.
             </p>
         </div>
 
@@ -26,7 +26,7 @@
            class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">
 
             <i class="bi bi-plus-circle"></i>
-            New PO-GPPO
+            New Invoice Submission
         </a>
         @endif
 
@@ -42,7 +42,7 @@
     <!-- Search + Filter -->
     <div class="bg-white rounded-xl shadow-sm p-4">
 
-        <form method="GET" class="grid md:grid-cols-3 gap-3">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-3">
 
             <input
                 type="text"
@@ -55,22 +55,18 @@
 
                 <option value="" {{ request('status') === null || request('status') === '' ? 'selected' : '' }}>All Status</option>
 
-                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending (For Review)</option>
 
-                <option value="under_review" {{ request('status') === 'under_review' ? 'selected' : '' }}>
-                    Under Review
-                </option>
-
-                <option value="approved_for_continuing" {{ request('status') === 'approved_for_continuing' ? 'selected' : '' }}>
-                    Approved for Continuing
+                <option value="approved_for_countering" {{ request('status') === 'approved_for_countering' ? 'selected' : '' }}>
+                    Approved for Countering
                 </option>
 
                 <option value="returned_for_compliance" {{ request('status') === 'returned_for_compliance' ? 'selected' : '' }}>
                     Returned for Compliance
                 </option>
 
-                <option value="continued" {{ request('status') === 'continued' ? 'selected' : '' }}>
-                    Continued
+                <option value="countered" {{ request('status') === 'countered' ? 'selected' : '' }}>
+                    Countered/Received
                 </option>
 
                 <option value="check_ready_for_release" {{ request('status') === 'check_ready_for_release' ? 'selected' : '' }}>
@@ -81,16 +77,39 @@
                     Released
                 </option>
 
+                <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>
+                    Paid
+                </option>
+
             </select>
 
-            <div class="flex gap-3">
-                <button type="submit" class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                    Apply
-                </button>
-                <a href="{{ route(auth()->user()->role . '.po-gppo.index') }}" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100">
-                    Reset
-                </a>
-            </div>
+            <!-- From -->
+            <input
+                type="date"
+                name="from_date"
+                value="{{ request('from_date') }}"
+                class="border rounded-lg px-3 py-2">
+
+            <!-- To -->
+            <input
+                type="date"
+                name="to_date"
+                value="{{ request('to_date') }}"
+                class="border rounded-lg px-3 py-2">
+
+            <!-- Apply -->
+            <button
+                type="submit"
+                class="bg-red-600 text-white rounded-lg hover:bg-red-700">
+                <i class="bi bi-funnel"></i>
+                Apply Filters
+            </button>
+
+            <!-- Reset -->
+            <a href="{{ route(auth()->user()->role.'.po-gppo.index') }}"
+            class="border rounded-lg text-center py-2 hover:bg-slate-100">
+                Reset
+            </a>
         </form>
 
     </div>
@@ -111,10 +130,12 @@
                         @endif
                         <th class="px-4 py-3 text-left">Invoice No</th>
                         <th class="px-4 py-3 text-left">PO No</th>
+                        <th class="px-4 py-3 text-left">DR No</th>
+                        <th class="px-4 py-3 text-left">GRPO</th>
                         <th class="px-4 py-3 text-left">Amount</th>
                         <th class="px-4 py-3 text-left">Status</th>
                         <th class="px-4 py-3 text-left">Files</th>
-                        <th class="px-4 py-3 text-left">Created</th>
+                        <th class="px-4 py-3 text-left">Submitted Date</th>
                         <th class="px-4 py-3 text-center">Actions</th>
                     </tr>
 
@@ -145,6 +166,14 @@
                             </td>
 
                             <td class="px-4 py-3">
+                                {{ $record->dr_no ?? '—' }}
+                            </td>
+
+                            <td class="px-4 py-3">
+                                {{ $record->grpo ?? '—'  }}
+                            </td>
+
+                            <td class="px-4 py-3">
                                 ₱ {{ number_format($record->amount, 2) }}
                             </td>
 
@@ -155,20 +184,16 @@
                                             'label' => 'Pending',
                                             'class' => 'bg-yellow-100 text-yellow-700'
                                         ],
-                                        'under_review' => [
-                                            'label' => 'Under Review',
-                                            'class' => 'bg-blue-100 text-blue-700'
-                                        ],
-                                        'approved_for_continuing' => [
-                                            'label' => 'Approved for Continuing',
+                                        'approved_for_countering' => [
+                                            'label' => 'Approved for Countering',
                                             'class' => 'bg-green-100 text-green-700'
                                         ],
                                         'returned_for_compliance' => [
                                             'label' => 'Returned for Compliance',
                                             'class' => 'bg-red-100 text-red-700'
                                         ],
-                                        'continued' => [
-                                            'label' => 'Continued',
+                                        'countered' => [
+                                            'label' => 'Countered',
                                             'class' => 'bg-emerald-100 text-emerald-700'
                                         ],
                                         'check_ready_for_release' => [
@@ -177,6 +202,10 @@
                                         ],
                                         'released' => [
                                             'label' => 'Released',
+                                            'class' => 'bg-green-100 text-green-700'
+                                        ],
+                                        'paid' => [
+                                            'label' => 'Paid',
                                             'class' => 'bg-green-100 text-green-700'
                                         ],
                                     ];
@@ -255,7 +284,7 @@
 
                         <tr>
 
-                            <td colspan="{{ $isStaff ? 9 : 8 }}"
+                            <td colspan="{{ $isStaff ? 11 : 10 }}"
                                 class="text-center py-10 text-slate-500">
 
                                 No PO-GPPO records found.
@@ -268,13 +297,30 @@
 
                 </tbody>
 
-            </table>
+           </table>
+
+        </div>
+
+            <div class="border-t bg-slate-50 px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+                <div class="text-sm text-slate-600">
+                    Showing
+                    <span class="font-semibold">{{ $records->firstItem() ?? 0 }}</span>
+                    to
+                    <span class="font-semibold">{{ $records->lastItem() ?? 0 }}</span>
+                    of
+                    <span class="font-semibold">{{ $records->total() }}</span>
+                    records
+                </div>
+
+                <div>
+                    {{ $records->onEachSide(1)->links() }}
+                </div>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
-
 @endsection
-

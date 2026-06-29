@@ -21,7 +21,7 @@
 
         <div class="bg-white border border-slate-200 rounded-md p-2">
             <p class="text-[10px] text-slate-500 uppercase tracking-wide leading-none">
-                Pending JO
+                Pending Invoice JO
             </p>
             <h2 class="mt-0.5 text-base font-semibold text-slate-800">
                 ₱{{ number_format($pendingJoAmount, 2) }}
@@ -30,7 +30,7 @@
 
         <div class="bg-white border border-slate-200 rounded-md p-2">
             <p class="text-[10px] text-slate-500 uppercase tracking-wide leading-none">
-                Pending PO
+                Pending Invoice PO
             </p>
             <h2 class="mt-0.5 text-base font-semibold text-slate-800">
                 ₱{{ number_format($pendingPoAmount, 2) }}
@@ -39,7 +39,7 @@
 
         <div class="bg-white border border-slate-200 rounded-md p-2">
             <p class="text-[10px] text-slate-500 uppercase tracking-wide leading-none">
-                Released JO
+                Paid JO
             </p>
             <h2 class="mt-0.5 text-base font-semibold text-slate-800">
                 ₱{{ number_format($releasedJoAmount, 2) }}
@@ -48,7 +48,7 @@
 
         <div class="bg-white border border-slate-200 rounded-md p-2">
             <p class="text-[10px] text-slate-500 uppercase tracking-wide leading-none">
-                Released PO
+                Paid PO
             </p>
             <h2 class="mt-0.5 text-base font-semibold text-slate-800">
                 ₱{{ number_format($releasedPoAmount, 2) }}
@@ -87,7 +87,7 @@
             </div>
 
             <div class="bg-white border border-slate-200 rounded-md p-2">
-                <p class="text-[11px] text-slate-500">Released</p>
+                <p class="text-[11px] text-slate-500">Paid</p>
                 <h3 class="text-lg font-semibold text-slate-800">
                     {{ $releasedJo }}
                 </h3>
@@ -132,15 +132,15 @@
                 </h3>
             </div>
 
-            <div class="bg-white border border-slate-200 rounded-md p-2">
-                <p class="text-[11px] text-slate-500">Released</p>
+            <div class="bg-white border border-slate-200 rounded-md sp-2">
+                <p class="text-[11px] text-slate-500">Paid</p>
                 <h3 class="text-lg font-semibold text-slate-800">
                     {{ $releasedPo }}
                 </h3>
             </div>
 
             <div class="bg-white border border-slate-200 rounded-md p-2">
-                <p class="text-[11px] text-slate-500">Returned</p>
+                <p class="text-[11px] text-slate-500">Rejected</p>
                 <h3 class="text-lg font-semibold text-slate-800">
                     {{ $returnedPo }}
                 </h3>

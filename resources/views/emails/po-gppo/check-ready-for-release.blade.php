@@ -1,4 +1,3 @@
-```blade
 @extends('components.email')
 
 @section('title', 'Check Available for Release')
@@ -153,4 +152,3 @@
 </p>
 
 @endsection
-```

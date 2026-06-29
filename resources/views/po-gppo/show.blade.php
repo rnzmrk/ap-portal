@@ -7,10 +7,10 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-slate-800">
-                PO-GPPO Details
+                Invioce Submission Details
             </h1>
             <p class="text-sm text-slate-500 mt-1">
-                View PO-GPPO record information.
+                View Invioce record information.
             </p>
         </div>
 
@@ -43,6 +43,16 @@
                 </div>
 
                 <div>
+                    <p class="text-sm text-slate-500">DR No</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->dr_no }}</p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-slate-500">GRPO</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->grpo }}</p>
+                </div>
+
+                <div>
                     <p class="text-sm text-slate-500">Amount</p>
                     <p class="mt-1 text-base font-semibold text-slate-800">₱ {{ number_format($poGppo->amount, 2) }}</p>
                 </div>
@@ -54,7 +64,7 @@
                     <p class="mt-1 text-base font-semibold text-slate-800">{{ ucfirst(str_replace('_', ' ', $poGppo->status)) }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-slate-500">Created At</p>
+                    <p class="text-sm text-slate-500">Submitted Date</p>
                     <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->created_at->format('M d, Y h:i A') }}</p>
                 </div>
             </div>
@@ -70,8 +80,8 @@
             <div class="grid gap-6 md:grid-cols-2 border-t pt-6">
                 @if($poGppo->payment_details)
                 <div>
-                    <p class="text-sm text-slate-500">Payment Details</p>
-                    <p class="mt-1 text-base text-slate-800">{{ $poGppo->payment_details }}</p>
+                    <p class="text-sm text-slate-500">Amount Details</p>
+                    <p class="mt-1 text-base text-slate-800">{{ $poGppo->amount_details }}</p>
                 </div>
                 @endif
                 @if($poGppo->check_no)

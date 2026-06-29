@@ -29,6 +29,11 @@ class UpdateJoEvaluationRequest extends FormRequest
         return [
             'status' => ['required', new Enum(JoEvaluationStatusEnum::class)],
             'rejection_reason' => ['nullable', 'string'],
+            'amount_details' => ['nullable', 'string'],
+            'check_no' => ['nullable', 'string'],
+            'release_location' => ['nullable', 'string'],
+            'evaluation_files' => ['nullable', 'array'],
+            'evaluation_files.*' => ['nullable', 'file', 'mimes:pdf', 'max:2048'],
         ];
     }
 }

@@ -8,16 +8,16 @@
         <div>
             <h1 class="text-2xl font-bold text-slate-800">
                 @if(auth()->user()->role === 'supplier')
-                    Edit PO-GPPO
+                    Edit Invoice Submission
                 @else
-                    Update PO-GPPO Status
+                    Update Invioce Submission Status
                 @endif
             </h1>
             <p class="text-sm text-slate-500 mt-1">
                 @if(auth()->user()->role === 'supplier')
-                    Update PO-GPPO details.
+                    Update Invoice details.
                 @else
-                    Update the status of the PO-GPPO record.
+                    Update the status of the Invioce Submission record.
                 @endif
             </p>
         </div>
@@ -142,6 +142,14 @@
                             <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->po_no }}</p>
                         </div>
                         <div>
+                            <p class="text-sm text-slate-500">DR No</p>
+                            <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->dr_no }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500">GRPO</p>
+                            <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->grpo }}</p>
+                        </div>
+                        <div>
                             <p class="text-sm text-slate-500">Amount</p>
                             <p class="mt-1 text-base font-semibold text-slate-800">₱ {{ number_format($poGppo->amount, 2) }}</p>
                         </div>
@@ -153,13 +161,13 @@
                         </label>
                         <select name="status" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('status') border-red-500 @enderror" required>
                             <option value="">Select Status</option>
-                            <option value="pending" {{ old('status', $poGppo->status) === 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="under_review" {{ old('status', $poGppo->status) === 'under_review' ? 'selected' : '' }}>Under Review</option>
-                            <option value="approved_for_continuing" {{ old('status', $poGppo->status) === 'approved_for_continuing' ? 'selected' : '' }}>Approved for Continuing</option>
+                            <option value="pending" {{ old('status', $poGppo->status) === 'pending' ? 'selected' : '' }}>Pending (For Review)</option>
+                            <option value="approved_for_countering" {{ old('status', $poGppo->status) === 'approved_for_countering' ? 'selected' : '' }}>Approved for Countering</option>
                             <option value="returned_for_compliance" {{ old('status', $poGppo->status) === 'returned_for_compliance' ? 'selected' : '' }}>Returned for Compliance</option>
-                            <option value="continued" {{ old('status', $poGppo->status) === 'continued' ? 'selected' : '' }}>Continued</option>
+                            <option value="countered" {{ old('status', $poGppo->status) === 'countered' ? 'selected' : '' }}>Countered/Received</option>
                             <option value="check_ready_for_release" {{ old('status', $poGppo->status) === 'check_ready_for_release' ? 'selected' : '' }}>Check Ready for Release</option>
                             <option value="released" {{ old('status', $poGppo->status) === 'released' ? 'selected' : '' }}>Released</option>
+                            <option value="paid" {{ old('status', $poGppo->status) === 'paid' ? 'selected' : '' }}>Paid</option>
                         </select>
                         @error('status')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -181,12 +189,12 @@
                     <div class="border-t pt-6 grid gap-6 md:grid-cols-2">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">
-                                Payment Details
+                                Amount Details
                             </label>
-                            <textarea name="payment_details" rows="3"
-                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('payment_details') border-red-500 @enderror"
-                                placeholder="Enter payment details">{{ old('payment_details', $poGppo->payment_details) }}</textarea>
-                            @error('payment_details')
+                            <textarea name="amount_details" rows="3"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('amount_details') border-red-500 @enderror"
+                                placeholder="Enter payment details">{{ old('payment_details', $poGppo->amount_details) }}</textarea>
+                            @error('amount_details')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>

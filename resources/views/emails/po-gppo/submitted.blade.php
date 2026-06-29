@@ -1,4 +1,4 @@
-```blade
+
 @extends('components.email')
 
 @section('title', 'PO Submitted Successfully')
@@ -99,4 +99,3 @@
 <br/>
 
 @endsection
-```
