@@ -3,7 +3,10 @@
 @section('content')
 
 @php
-    $isStaff = in_array(auth()->user()->role, ['procurement', 'finance', 'operations']);
+    $user = auth()->user();
+    $role = $user->role;
+
+    $isStaff = in_array($role, ['procurement', 'finance', 'operations']);
 @endphp
 
 <div class="space-y-6">
@@ -21,13 +24,40 @@
             </p>
         </div>
 
-        @if(auth()->user()->role === 'supplier')
-        <a href="{{ route(auth()->user()->role . '.po-gppo.create') }}"
-           class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">
+        {{-- Supplier Only --}}
+        @if($role === 'supplier')
+            <a href="{{ route($role . '.po-gppo.create') }}"
+               class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">
 
-            <i class="bi bi-plus-circle"></i>
-            New Invoice Submission
-        </a>
+                <i class="bi bi-plus-circle"></i>
+                New Invoice Submission
+            </a>
+        @endif
+
+        {{-- Staff Only --}}
+        @if($isStaff)
+
+            <a href="{{ route('po-gppo.export', request()->only([
+                'search',
+                'status',
+                'from_date',
+                'to_date'
+            ])) }}"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+
+                <i class="bi bi-download"></i>
+                Export Excel
+            </a>
+
+            <button type="import-button"
+                    data-modal-target="import-modal"
+                    data-modal-toggle="import-modal"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg">
+
+                <i class="bi bi-upload"></i>
+                Import Excel
+            </button>
+
         @endif
 
     </div>
@@ -322,5 +352,57 @@
         </div>
 
     </div>
+
+    <!-- Import Modal -->
+    <div id="import-modal"
+        tabindex="-1"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+
+        <div class="relative p-4 w-full max-w-md h-full md:h-auto">
+
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-slate-700">
+
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 border-b rounded-t dark:border-slate-600">
+
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
+                        Import Excel File
+                    </h3>
+
+                    <button type="button"
+                            class="text-slate-400 hover:text-slate-900"
+                            data-modal-hide="import-modal">
+
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+
+                </div>
+
+                <!-- Modal body -->
+                <form action="{{ route('po-gppo.import') }}"
+                    method="POST"
+                    enctype="multipart/form-data">
+
+                    @csrf
+
+                    <input
+                        type="file"
+                        name="file"
+                        accept=".xlsx,.xls,.csv"
+                        required>
+
+                    <button type="submit">
+                        Import
+                    </button>
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
 
 @endsection

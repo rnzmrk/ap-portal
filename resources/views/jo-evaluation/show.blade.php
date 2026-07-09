@@ -46,19 +46,46 @@
                 </div>
 
                 <div>
+                    <p class="text-sm text-slate-500">DR No</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">₱ {{ $joEvaluation->dr_no }}</p>
+                </div>
+
+                <div>
                     <p class="text-sm text-slate-500">Amount</p>
                     <p class="mt-1 text-base font-semibold text-slate-800">₱ {{ number_format($joEvaluation->amount, 2) }}</p>
                 </div>
             </div>
 
             <div class="grid gap-6 md:grid-cols-2">
+
+                <div>
+                    <p class="text-sm text-slate-500">Amount Details</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">₱ {{ number_format($joEvaluation->amount_details, 2) }}</p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-slate-500">Check No</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">{{ $joEvaluation->check_no }}</p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-slate-500">Release Location</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">{{ $joEvaluation->release_location }}</p>
+                </div>
+
                 <div>
                     <p class="text-sm text-slate-500">Status</p>
                     <p class="mt-1 text-base font-semibold text-slate-800">{{ ucfirst(str_replace('_', ' ', $joEvaluation->status)) }}</p>
                 </div>
+
                 <div>
                     <p class="text-sm text-slate-500">Submitted Date</p>
                     <p class="mt-1 text-base font-semibold text-slate-800">{{ $joEvaluation->created_at->format('M d, Y h:i A') }}</p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-slate-500">Rejection Reason</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">{{ $joEvaluation->rejection_reason }}</p>
                 </div>
             </div>
 

@@ -6,6 +6,19 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PoGppoController;
 use App\Http\Controllers\JoEvaluationController;
 
+
+Route::get('/po-gppo/export', [PoGppoController::class, 'export'])
+    ->name('po-gppo.export');
+
+Route::post('/po-gppo/import', [PoGppoController::class, 'import'])
+    ->name('po-gppo.import');
+
+Route::get('/jo-evaluation/export', [JoEvaluationController::class, 'export'])
+    ->name('jo-evaluation.export');
+
+Route::post('/jo-evaluation/import', [JoEvaluationController::class, 'import'])
+    ->name('jo-evaluation.import');
+
 Route::get('/', function () {
     return view('web');
 })->name('home');
@@ -23,7 +36,7 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/register', [AuthController::class, 'register'])
         ->name('register.submit');
-    
+
     Route::get('/register-employee', [AuthController::class, 'showEmployeeRegister'])
         ->name('register.employee');
 

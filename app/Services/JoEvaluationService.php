@@ -127,10 +127,73 @@ class JoEvaluationService
 
             })
 
+
             ->paginate(15)
             ->withQueryString();
     }
 
+     public function getExportRecords(?string $search = null, $status = null, ?string $fromDate = null, ?string $toDate = null)
+    {
+        return JoEvaluation::with('user')
+            ->latest()
+
+            ->when($search, function ($query, $search) {
+
+                $query->where(function ($q) use ($search) {
+
+                    $q->where('invoice_no','like',"%{$search}%")
+                    ->orWhere('accomplishment_no','like',"%{$search}%")
+                    ->orWhere('jo_reference','like',"%{$search}%")
+
+                    ->orWhereHas('user', function($u) use ($search){
+
+                            $u->where('name','like',"%{$search}%");
+
+                    });
+
+                });
+
+            })
+
+            ->when($status,function($query,$status){
+
+                if($status instanceof JoEvaluationStatusEnum){
+                    $status=$status->value;
+                }
+
+                $query->where('status',$status);
+
+            })
+
+            ->when($fromDate,function($query,$fromDate){
+
+                $query->whereDate('created_at','>=',$fromDate);
+
+            })
+
+            ->when($toDate,function($query,$toDate){
+
+                $query->whereDate('created_at','<=',$toDate);
+
+            })
+            ->select(
+                    'id',
+                    'invoice_no',
+                    'accomplishment_no',
+                    'jo_reference',
+                    'dr_no',
+                    'amount',
+                    'status',
+                    'check_no',
+                    'amount_details',
+                    'release_location',
+                    'rejection_reason',
+                    'created_at'
+                )
+                ->get();
+
+
+    }
 
     /**
      * =========================

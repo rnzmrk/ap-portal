@@ -93,31 +93,72 @@ class PoGppoService
 
 
     public function getRecords(?string $search = null, ?string $status = null, ?string $fromDate = null, ?string $toDate = null)
-    {
-        return PoGppo::with('supplier')
-            ->latest()
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('invoice_no', 'like', "%{$search}%")
-                        ->orWhere('po_no', 'like', "%{$search}%")
-                        ->orWhereHas('supplier', function($u) use ($search){
+        {
+                return PoGppo::with('supplier')
+                    ->latest()
+                    ->when($search, function ($query, $search) {
+                        $query->where(function ($query) use ($search) {
+                            $query->where('invoice_no', 'like', "%{$search}%")
+                                ->orWhere('po_no', 'like', "%{$search}%")
+                                ->orWhereHas('supplier', function($u) use ($search){
 
-                            $u->where('name','like',"%{$search}%");
+                                    $u->where('name','like',"%{$search}%");
 
+                            });
+                        });
+                    })
+                    ->when($status, function ($query, $status) {
+                        $query->where('status', $status);
+                    })
+                    ->when($fromDate,function($query,$fromDate){
+
+                        $query->whereDate('created_at','>=',$fromDate);
+
+                    })
+                    ->when($toDate, function ($query, $toDate) {
+                        $query->whereDate('created_at', '<=', $toDate);
+                    })
+                    ->paginate(15)
+                    ->withQueryString();
+        }
+
+        public function getExportRecords(?string $search = null, ?string $status = null, ?string $fromDate = null, ?string $toDate = null)
+        {
+            return PoGppo::with('supplier')
+                ->latest()
+                ->when($search, function ($query, $search) {
+                    $query->where(function ($query) use ($search) {
+                        $query->where('invoice_no', 'like', "%{$search}%")
+                            ->orWhere('po_no', 'like', "%{$search}%")
+                            ->orWhereHas('supplier', function ($u) use ($search) {
+                                $u->where('name', 'like', "%{$search}%");
+                            });
                     });
-                });
-            })
-            ->when($status, function ($query, $status) {
-                $query->where('status', $status);
-            })
-            ->when($fromDate,function($query,$fromDate){
-
-                $query->whereDate('created_at','>=',$fromDate);
-
-            })
-            ->paginate(15)
-            ->withQueryString();
-    }
+                })
+                ->when($status, function ($query, $status) {
+                    $query->where('status', $status);
+                })
+                ->when($fromDate, function ($query, $fromDate) {
+                    $query->whereDate('created_at', '>=', $fromDate);
+                })
+                ->when($toDate, function ($query, $toDate) {
+                    $query->whereDate('created_at', '<=', $toDate);
+                })
+                ->select(
+                    'id',
+                    'invoice_no',
+                    'po_no',
+                    'dr_no',
+                    'grpo',
+                    'amount',
+                    'status',
+                    'check_no',
+                    'amount_details',
+                    'release_location',
+                    'return_reason'
+                )
+                ->get();
+      }
 
     public function store(StorePoGppoRequest $request): PoGppo
     {

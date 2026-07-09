@@ -59,6 +59,22 @@
             </div>
 
             <div class="grid gap-6 md:grid-cols-2">
+
+                <div>
+                    <p class="text-sm text-slate-500">Amount Details</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">₱ {{ number_format($poGppo->amount_details, 2) }}</p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-slate-500">Check No</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->check_no }}</p>
+                </div>
+
+                <div>
+                    <p class="text-sm text-slate-500">Release Location</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->release_location }}</p>
+                </div>
+
                 <div>
                     <p class="text-sm text-slate-500">Status</p>
                     <p class="mt-1 text-base font-semibold text-slate-800">{{ ucfirst(str_replace('_', ' ', $poGppo->status)) }}</p>
@@ -67,37 +83,13 @@
                     <p class="text-sm text-slate-500">Submitted Date</p>
                     <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->created_at->format('M d, Y h:i A') }}</p>
                 </div>
+
+                <div>
+                    <p class="text-sm text-slate-500">Return Reason</p>
+                    <p class="mt-1 text-base font-semibold text-slate-800">{{ $poGppo->return_reason }}</p>
+                </div>
             </div>
 
-            @if($poGppo->return_reason)
-            <div>
-                <p class="text-sm text-slate-500">Return Reason</p>
-                <p class="mt-1 text-base text-slate-800">{{ $poGppo->return_reason }}</p>
-            </div>
-            @endif
-
-            @if($poGppo->payment_details || $poGppo->check_no || $poGppo->release_location)
-            <div class="grid gap-6 md:grid-cols-2 border-t pt-6">
-                @if($poGppo->payment_details)
-                <div>
-                    <p class="text-sm text-slate-500">Amount Details</p>
-                    <p class="mt-1 text-base text-slate-800">{{ $poGppo->amount_details }}</p>
-                </div>
-                @endif
-                @if($poGppo->check_no)
-                <div>
-                    <p class="text-sm text-slate-500">Check No</p>
-                    <p class="mt-1 text-base text-slate-800">{{ $poGppo->check_no }}</p>
-                </div>
-                @endif
-                @if($poGppo->release_location)
-                <div>
-                    <p class="text-sm text-slate-500">Release Location</p>
-                    <p class="mt-1 text-base text-slate-800">{{ $poGppo->release_location }}</p>
-                </div>
-                @endif
-            </div>
-            @endif
 
             <div class="border-t pt-6">
                 <p class="text-sm text-slate-500 mb-3">Uploaded Files</p>

@@ -8,6 +8,10 @@ use App\Http\Requests\JoEvaluation\StoreJoEvaluationRequest;
 use App\Http\Requests\JoEvaluation\UpdateJoEvaluationRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use App\Exports\JoEvaluationExport;
+use App\Imports\JoEvaluationImport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class JoEvaluationController extends Controller
 {
@@ -130,5 +134,31 @@ class JoEvaluationController extends Controller
         return redirect()
             ->route(auth()->user()->role . '.jo-evaluation.index')
             ->with('success', 'JO Evaluation deleted successfully.');
+    }
+
+     public function export(Request $request)
+    {
+        return Excel::download(
+            new JoEvaluationExport(
+                $request->search,
+                $request->status,
+                $request->from_date,
+                $request->to_date,
+            ),
+            'jo-evaluation.xlsx'
+        );
+    }
+     public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(
+            new JoEvaluationImport,
+            $request->file('file')
+        );
+
+        return back()->with('success', 'Imported successfully.');
     }
 }

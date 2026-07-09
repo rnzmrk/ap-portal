@@ -8,6 +8,10 @@ use App\Http\Requests\PoGppo\StorePoGppoRequest;
 use App\Http\Requests\PoGppo\UpdatePoGppoRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\PoGppoExport;
+use App\Imports\PoGppoImport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class PoGppoController extends Controller
 {
@@ -117,5 +121,32 @@ class PoGppoController extends Controller
         return redirect()
             ->route(auth()->user()->role . '.po-gppo.index')
             ->with('success', 'PO-GPPO deleted successfully.');
+    }
+
+    public function export(Request $request)
+    {
+        return Excel::download(
+            new PoGppoExport(
+                $request->search,
+                $request->status,
+                $request->from_date,
+                $request->to_date,
+            ),
+            'po-gppo.xlsx'
+        );
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(
+            new PoGppoImport,
+            $request->file('file')
+        );
+
+        return back()->with('success', 'Imported successfully.');
     }
 }
